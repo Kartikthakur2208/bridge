@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bridge — learn anything through what you already know</title>
+<style>
+  :root{
+    --ink:#1b1f23;
+    --paper:#faf7f2;
+    --paper-2:#f0ebe1;
+    --line:#dcd4c4;
+    --known:#2e6b5e;
+    --new:#a9542f;
+    --bridge:#c9a13b;
+    --muted:#6b6458;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font-family:'Iowan Old Style','Palatino Linotype',Georgia,serif;}
+  .wrap{max-width:760px;margin:0 auto;padding:48px 24px 96px;}
+  header{margin-bottom:40px;}
+  .eyebrow{font-family:'Courier New',monospace;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+  h1{font-size:44px;line-height:1.05;margin:0 0 12px;font-weight:600;letter-spacing:-.01em;}
+  h1 span{color:var(--new);font-style:italic;}
+  .sub{font-size:17px;color:var(--muted);max-width:52ch;line-height:1.5;}
+
+  .bridge-svg{width:100%;height:110px;margin:28px 0 8px;display:block;}
+  .node-label{font-family:'Courier New',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:2px;padding:28px;margin-bottom:18px;}
+  label{display:block;font-family:'Courier New',monospace;font-size:12px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+  input[type=text], textarea{
+    width:100%;font-family:inherit;font-size:16px;padding:12px 14px;border:1px solid var(--line);
+    border-radius:2px;background:var(--paper);color:var(--ink);resize:vertical;
+  }
+  textarea{min-height:100px;}
+  input[type=text]:focus, textarea:focus{outline:2px solid var(--known);outline-offset:1px;}
+  .row{display:flex;gap:16px;flex-wrap:wrap;}
+  .row > div{flex:1;min-width:220px;}
+
+  .filerow{display:flex;align-items:center;gap:12px;margin-top:10px;}
+  .filebtn{font-family:'Courier New',monospace;font-size:12px;letter-spacing:.05em;text-transform:uppercase;
+    border:1px solid var(--line);background:var(--paper-2);padding:8px 14px;border-radius:2px;cursor:pointer;}
+  .filebtn:hover{border-color:var(--ink);}
+  #fileName{font-size:13px;color:var(--muted);}
+
+  button.primary{
+    font-family:'Courier New',monospace;font-size:13px;letter-spacing:.08em;text-transform:uppercase;
+    background:var(--ink);color:var(--paper);border:none;padding:14px 26px;border-radius:2px;
+    cursor:pointer;margin-top:6px;
+  }
+  button.primary:hover{background:#000;}
+  button.primary:disabled{background:#b9b2a4;cursor:default;}
+
+  .keyrow{display:flex;gap:10px;align-items:center;margin-bottom:22px;font-size:13px;color:var(--muted);}
+  .keyrow input{flex:1;font-size:13px;padding:8px 10px;}
+  .keyrow a{color:var(--known);}
+
+  #result{display:none;}
+  .result-block{margin-bottom:22px;}
+  .result-block .tag{font-family:'Courier New',monospace;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;margin-bottom:6px;display:inline-block;padding:2px 8px;border-radius:20px;}
+  .tag.summary{background:var(--paper-2);color:var(--ink);}
+  .tag.analogy{background:#eef4f1;color:var(--known);}
+  .tag.breaks{background:#f7ece3;color:var(--new);}
+  .result-block p{font-size:16px;line-height:1.65;margin:8px 0 0;}
+
+  .quiz-area{border-top:1px dashed var(--line);padding-top:20px;margin-top:8px;}
+  .quiz-q{font-size:16px;margin-bottom:14px;}
+  .quiz-opt{display:block;width:100%;text-align:left;padding:10px 14px;margin-bottom:8px;
+    background:var(--paper);border:1px solid var(--line);border-radius:2px;cursor:pointer;font-family:inherit;font-size:15px;}
+  .quiz-opt:hover{border-color:var(--ink);}
+  .quiz-opt.correct{border-color:var(--known);background:#eef4f1;}
+  .quiz-opt.wrong{border-color:var(--new);background:#f7ece3;}
+  .quiz-feedback{font-size:14px;color:var(--muted);margin-top:10px;min-height:20px;}
+  #quizBtn{margin-top:4px;}
+
+  .loading{font-family:'Courier New',monospace;font-size:13px;color:var(--muted);
+    display:none;align-items:center;gap:10px;margin-top:14px;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--bridge);animation:pulse 1.2s infinite ease-in-out;}
+  .dot:nth-child(2){animation-delay:.2s;} .dot:nth-child(3){animation-delay:.4s;}
+  @keyframes pulse{0%,80%,100%{opacity:.2;}40%{opacity:1;}}
+
+  .error{font-size:13px;color:var(--new);margin-top:10px;display:none;}
+  footer{margin-top:60px;font-size:12px;color:var(--muted);text-align:center;font-family:'Courier New',monospace;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Bridge</div>
+    <h1>Learn anything, <span>through what you already know</span></h1>
+    <p class="sub">Tell Bridge one thing you understand well. Ask it to explain something you don't. It'll build a real bridge between the two — and tell you honestly where that bridge breaks.</p>
+  </header>
+
+  <svg class="bridge-svg" viewBox="0 0 700 110" xmlns="http://www.w3.org/2000/svg">
+    <circle id="knownDot" cx="70" cy="70" r="26" fill="#eef4f1" stroke="#2e6b5e" stroke-width="2"/>
+    <text x="70" y="75" text-anchor="middle" font-family="Courier New" font-size="10" fill="#2e6b5e">KNOWN</text>
+    <circle id="newDot" cx="630" cy="70" r="26" fill="#f7ece3" stroke="#a9542f" stroke-width="2"/>
+    <text x="630" y="75" text-anchor="middle" font-family="Courier New" font-size="10" fill="#a9542f">NEW</text>
+    <path id="bridgePath" d="M 96 70 Q 350 20 604 70" fill="none" stroke="#c9a13b" stroke-width="2" stroke-dasharray="4 6" opacity="0.5"/>
+    <circle id="travelDot" cx="96" cy="70" r="4" fill="#c9a13b" opacity="0"/>
+  </svg>
+
+  <div class="keyrow">
+    <span>Claude API key:</span>
+    <input type="text" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
+    <a href="https://console.anthropic.com" target="_blank">get one ↗</a>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label>Something you already know well</label>
+        <input type="text" id="knownInput" placeholder="e.g. basketball, baking bread, Minecraft, cricket">
+      </div>
+    </div>
+    <div style="height:16px"></div>
+    <label>What do you want explained?</label>
+    <textarea id="topicInput" placeholder="Type a concept — e.g. 'how TCP/IP works' or 'Newton's third law'"></textarea>
+    <div class="filerow">
+      <button class="filebtn" id="pdfBtn">Or upload a PDF instead</button>
+      <input type="file" id="pdfFile" accept="application/pdf" style="display:none">
+      <span id="fileName"></span>
+    </div>
+    <button class="primary" id="explainBtn">Build the bridge</button>
+    <div class="loading" id="loading"><span class="dot"></span><span class="dot"></span><span class="dot"></span> thinking in analogies…</div>
+    <div class="error" id="error"></div>
+  </div>
+
+  <div id="result">
+    <div class="card">
+      <div class="result-block">
+        <span class="tag summary">Plain summary</span>
+        <p id="outSummary"></p>
+      </div>
+      <div class="result-block">
+        <span class="tag analogy" id="analogyTag">The analogy</span>
+        <p id="outAnalogy"></p>
+      </div>
+      <div class="result-block">
+        <span class="tag breaks">Where it breaks down</span>
+        <p id="outBreaks"></p>
+      </div>
+    </div>
+
+    <div class="card quiz-area">
+      <button class="primary" id="quizBtn">Check my understanding →</button>
+      <div id="quizContainer" style="display:none;margin-top:18px;">
+        <div class="quiz-q" id="quizQ"></div>
+        <div id="quizOpts"></div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>BRIDGE · built with Claude · a hackathon project</footer>
+</div>
+
+<script>
+let pdfText = "";
+
+document.getElementById('pdfBtn').onclick = () => document.getElementById('pdfFile').click();
+document.getElementById('pdfFile').onchange = async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  document.getElementById('fileName').textContent = "reading " + file.name + "...";
+  try{
+    const buf = await file.arrayBuffer();
+    // Minimal client-side PDF text extraction (no external libs / no network needed beyond CDN pdf.js)
+    const pdfjsLib = await loadPdfJs();
+    const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+    let text = "";
+    for(let i=1;i<=Math.min(pdf.numPages,15);i++){
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(it=>it.str).join(" ") + "\n";
+    }
+    pdfText = text.slice(0, 6000);
+    document.getElementById('fileName').textContent = "✓ " + file.name + " (" + pdfText.length + " chars extracted)";
+    document.getElementById('topicInput').placeholder = "PDF loaded — leave blank to explain its core idea, or type a specific question about it";
+  }catch(err){
+    document.getElementById('fileName').textContent = "couldn't read that PDF — try pasting text instead";
+  }
+};
+
+function loadPdfJs(){
+  return new Promise((resolve, reject)=>{
+    if(window.pdfjsLib){ resolve(window.pdfjsLib); return; }
+    const s = document.createElement('script');
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    s.onload = ()=>{
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+      resolve(window.pdfjsLib);
+    };
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function callClaude(apiKey, systemPrompt, userMsg){
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1000,
+      system: systemPrompt,
+      messages: [{ role: "user", content: userMsg }]
+    })
+  });
+  if(!res.ok){
+    const t = await res.text();
+    throw new Error("API error " + res.status + ": " + t.slice(0,200));
+  }
+  const data = await res.json();
+  const text = data.content.filter(c=>c.type==="text").map(c=>c.text).join("\n");
+  return text;
+}
+
+function animateBridge(){
+  const dot = document.getElementById('travelDot');
+  dot.style.opacity = 1;
+  const path = document.getElementById('bridgePath');
+  path.style.opacity = 1;
+  let t = 0;
+  const len = path.getTotalLength();
+  const anim = setInterval(()=>{
+    t += 0.02;
+    if(t>1){ clearInterval(anim); return; }
+    const pt = path.getPointAtLength(t*len);
+    dot.setAttribute('cx', pt.x);
+    dot.setAttribute('cy', pt.y);
+  }, 20);
+}
+
+document.getElementById('explainBtn').onclick = async () => {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const known = document.getElementById('knownInput').value.trim();
+  const topicRaw = document.getElementById('topicInput').value.trim();
+  const errEl = document.getElementById('error');
+  errEl.style.display = 'none';
+
+  if(!apiKey){ errEl.textContent = "Paste your Claude API key above first."; errEl.style.display='block'; return; }
+  if(!known){ errEl.textContent = "Tell Bridge something you already know well."; errEl.style.display='block'; return; }
+  if(!topicRaw && !pdfText){ errEl.textContent = "Type a topic or upload a PDF."; errEl.style.display='block'; return; }
+
+  const btn = document.getElementById('explainBtn');
+  btn.disabled = true;
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('quizContainer').style.display = 'none';
+
+  const topicContent = pdfText
+    ? `Here is source text extracted from a PDF the learner uploaded:\n\n"""${pdfText}"""\n\n${topicRaw ? "Specifically, they want this explained: " + topicRaw : "Extract the single core concept from this text and explain that."}`
+    : topicRaw;
+
+  const system = `You are Bridge, a tutor that explains unfamiliar concepts by building ONE detailed, concrete analogy rooted in something the learner already understands — never three shallow ones. You must:
+1. Give a short plain-language summary of the concept (2-3 sentences, no jargon).
+2. Build ONE detailed analogy mapping the new concept onto the learner's known domain. Be specific — use real objects/actions/roles from their known domain, not generic comparisons.
+3. Honestly name where the analogy breaks down or could mislead — every analogy has limits, and pretending otherwise teaches the wrong thing.
+Respond in EXACTLY this format with no extra commentary:
+SUMMARY: <text>
+ANALOGY: <text>
+BREAKS_DOWN: <text>`;
+
+  const userMsg = `Known domain: ${known}\nConcept to explain: ${topicContent}`;
+
+  try{
+    const raw = await callClaude(apiKey, system, userMsg);
+    const summary = (raw.match(/SUMMARY:\s*([\s\S]*?)(?=ANALOGY:|$)/i)||[,''])[1].trim();
+    const analogy = (raw.match(/ANALOGY:\s*([\s\S]*?)(?=BREAKS_DOWN:|$)/i)||[,''])[1].trim();
+    const breaks = (raw.match(/BREAKS_DOWN:\s*([\s\S]*)/i)||[,''])[1].trim();
+
+    document.getElementById('outSummary').textContent = summary || raw;
+    document.getElementById('outAnalogy').textContent = analogy;
+    document.getElementById('outBreaks').textContent = breaks;
+    document.getElementById('analogyTag').textContent = "Through " + known;
+    document.getElementById('result').style.display = 'block';
+    animateBridge();
+
+    window._bridgeContext = { known, topic: topicContent, apiKey };
+  }catch(err){
+    errEl.textContent = err.message;
+    errEl.style.display = 'block';
+  }finally{
+    btn.disabled = false;
+    document.getElementById('loading').style.display = 'none';
+  }
+};
+
+document.getElementById('quizBtn').onclick = async () => {
+  const ctx = window._bridgeContext;
+  if(!ctx) return;
+  const btn = document.getElementById('quizBtn');
+  btn.textContent = "Generating…";
+  btn.disabled = true;
+
+  const system = `Generate ONE multiple-choice question testing whether the learner understood the underlying concept (not the analogy itself). Respond in EXACTLY this format, nothing else:
+Q: <question>
+A: <option>
+B: <option>
+C: <option>
+D: <option>
+CORRECT: <letter only>`;
+
+  try{
+    const raw = await callClaude(ctx.apiKey, system, `Concept: ${ctx.topic}\nAnalogy used: ${document.getElementById('outAnalogy').textContent}`);
+    const q = (raw.match(/Q:\s*(.*)/)||[,''])[1].trim();
+    const opts = {
+      A: (raw.match(/A:\s*(.*)/)||[,''])[1].trim(),
+      B: (raw.match(/B:\s*(.*)/)||[,''])[1].trim(),
+      C: (raw.match(/C:\s*(.*)/)||[,''])[1].trim(),
+      D: (raw.match(/D:\s*(.*)/)||[,''])[1].trim(),
+    };
+    const correct = (raw.match(/CORRECT:\s*([ABCD])/)||[,''])[1].trim();
+
+    document.getElementById('quizQ').textContent = q;
+    const optsEl = document.getElementById('quizOpts');
+    optsEl.innerHTML = '';
+    Object.entries(opts).forEach(([letter, text])=>{
+      const b = document.createElement('button');
+      b.className = 'quiz-opt';
+      b.textContent = letter + ". " + text;
+      b.onclick = () => {
+        document.querySelectorAll('.quiz-opt').forEach(o=>o.disabled=true);
+        if(letter === correct){
+          b.classList.add('correct');
+          document.getElementById('quizFeedback').textContent = "✓ Exactly right.";
+        } else {
+          b.classList.add('wrong');
+          document.querySelectorAll('.quiz-opt').forEach(o=>{ if(o.textContent.startsWith(correct)) o.classList.add('correct'); });
+          document.getElementById('quizFeedback').textContent = "Not quite — the correct answer is highlighted.";
+        }
+      };
+      optsEl.appendChild(b);
+    });
+    document.getElementById('quizContainer').style.display = 'block';
+  }catch(err){
+    document.getElementById('quizFeedback').textContent = "Couldn't generate a question: " + err.message;
+    document.getElementById('quizContainer').style.display = 'block';
+  }finally{
+    btn.textContent = "Check my understanding →";
+    btn.disabled = false;
+  }
+};
+</script>
+</body>
+</html>
