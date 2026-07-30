@@ -1,40 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-provider="claude">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bridge — learn anything through what you already know</title>
 <style>
   :root{
+    /* ---- claude theme (default) ---- */
+    --bg:#faf7f2;
+    --bg-2:#f0ebe1;
+    --card:#ffffff;
     --ink:#1b1f23;
-    --paper:#faf7f2;
-    --paper-2:#f0ebe1;
     --line:#dcd4c4;
     --known:#2e6b5e;
-    --new:#a9542f;
+    --known-bg:#eef4f1;
+    --accent:#a9542f;
+    --accent-bg:#f7ece3;
     --bridge:#c9a13b;
     --muted:#6b6458;
+    --font-body:'Iowan Old Style','Palatino Linotype',Georgia,serif;
+    --font-mono:'Courier New',monospace;
+    --radius:2px;
+    --btn-bg:#1b1f23;
+    --btn-text:#faf7f2;
   }
+
+  html[data-provider="grok"]{
+    --bg:#0a0a0b;
+    --bg-2:#161618;
+    --card:#131315;
+    --ink:#f2f2f0;
+    --line:#2b2b2e;
+    --known:#e8e8e8;
+    --known-bg:#1e1e21;
+    --accent:#ffffff;
+    --accent-bg:#1e1e21;
+    --bridge:#ffffff;
+    --muted:#8b8b8f;
+    --font-body:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --font-mono:'Courier New',monospace;
+    --radius:6px;
+    --btn-bg:#ffffff;
+    --btn-text:#0a0a0b;
+  }
+
+  html[data-provider="gemini"]{
+    --bg:#ffffff;
+    --bg-2:#f4f6fb;
+    --card:#ffffff;
+    --ink:#1f1f1f;
+    --line:#e6e9f2;
+    --known:#1a73e8;
+    --known-bg:#e8f0fe;
+    --accent:#d93025;
+    --accent-bg:#fce8e6;
+    --bridge:#fbbc04;
+    --muted:#5f6368;
+    --font-body:'Google Sans','Segoe UI',Roboto,Arial,sans-serif;
+    --font-mono:'Segoe UI',Roboto,sans-serif;
+    --radius:18px;
+    --btn-bg:linear-gradient(90deg,#4285f4,#ea4335 33%,#fbbc04 66%,#34a853);
+    --btn-text:#ffffff;
+  }
+
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
-    font-family:'Iowan Old Style','Palatino Linotype',Georgia,serif;}
-  .wrap{max-width:760px;margin:0 auto;padding:48px 24px 96px;}
-  header{margin-bottom:40px;}
-  .eyebrow{font-family:'Courier New',monospace;font-size:12px;letter-spacing:.14em;
-    text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
-  h1{font-size:44px;line-height:1.05;margin:0 0 12px;font-weight:600;letter-spacing:-.01em;}
-  h1 span{color:var(--new);font-style:italic;}
-  .sub{font-size:17px;color:var(--muted);max-width:52ch;line-height:1.5;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);color:var(--ink);font-family:var(--font-body);
+    transition:background-color .5s ease, color .5s ease;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:40px 24px 96px;}
+  header{margin-bottom:28px;}
+  .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:10px;transition:color .5s ease;}
+  h1{font-size:44px;line-height:1.05;margin:0 0 12px;font-weight:600;letter-spacing:-.01em;transition:color .5s ease;}
+  h1 span{color:var(--accent);font-style:italic;transition:color .5s ease;}
+  html[data-provider="gemini"] h1 span{font-style:normal;}
+  .sub{font-size:17px;color:var(--muted);max-width:52ch;line-height:1.5;transition:color .5s ease;}
 
-  .bridge-svg{width:100%;height:110px;margin:28px 0 8px;display:block;}
-  .node-label{font-family:'Courier New',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;}
+  /* ---- provider switcher ---- */
+  .provider-row{display:flex;gap:10px;margin:24px 0 20px;flex-wrap:wrap;}
+  .provider-pill{
+    font-family:var(--font-mono);font-size:13px;letter-spacing:.04em;
+    padding:9px 18px;border-radius:999px;border:1px solid var(--line);
+    background:var(--card);color:var(--muted);cursor:pointer;
+    transition:all .35s ease;
+  }
+  .provider-pill:hover{border-color:var(--ink);color:var(--ink);}
+  .provider-pill.active{
+    background:var(--btn-bg);color:var(--btn-text);border-color:transparent;font-weight:600;
+  }
 
-  .card{background:#fff;border:1px solid var(--line);border-radius:2px;padding:28px;margin-bottom:18px;}
-  label{display:block;font-family:'Courier New',monospace;font-size:12px;letter-spacing:.08em;
-    text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+  .bridge-svg{width:100%;height:110px;margin:20px 0 8px;display:block;}
+  .node-known circle{fill:var(--known-bg);stroke:var(--known);transition:fill .5s ease, stroke .5s ease;}
+  .node-known text{fill:var(--known);transition:fill .5s ease;}
+  .node-new circle{fill:var(--accent-bg);stroke:var(--accent);transition:fill .5s ease, stroke .5s ease;}
+  .node-new text{fill:var(--accent);transition:fill .5s ease;}
+  #bridgePath{stroke:var(--bridge);transition:stroke .5s ease;}
+  #travelDot{fill:var(--bridge);transition:fill .5s ease;}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:28px;margin-bottom:18px;
+    transition:background-color .5s ease, border-color .5s ease;}
+  label{display:block;font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:8px;transition:color .5s ease;}
   input[type=text], textarea{
-    width:100%;font-family:inherit;font-size:16px;padding:12px 14px;border:1px solid var(--line);
-    border-radius:2px;background:var(--paper);color:var(--ink);resize:vertical;
+    width:100%;font-family:var(--font-body);font-size:16px;padding:12px 14px;border:1px solid var(--line);
+    border-radius:var(--radius);background:var(--bg);color:var(--ink);resize:vertical;
+    transition:background-color .5s ease, border-color .5s ease, color .5s ease;
   }
   textarea{min-height:100px;}
   input[type=text]:focus, textarea:focus{outline:2px solid var(--known);outline-offset:1px;}
@@ -42,50 +114,66 @@
   .row > div{flex:1;min-width:220px;}
 
   .filerow{display:flex;align-items:center;gap:12px;margin-top:10px;}
-  .filebtn{font-family:'Courier New',monospace;font-size:12px;letter-spacing:.05em;text-transform:uppercase;
-    border:1px solid var(--line);background:var(--paper-2);padding:8px 14px;border-radius:2px;cursor:pointer;}
+  .filebtn{font-family:var(--font-mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;
+    border:1px solid var(--line);background:var(--bg-2);padding:8px 14px;border-radius:var(--radius);cursor:pointer;
+    color:var(--ink);transition:all .5s ease;}
   .filebtn:hover{border-color:var(--ink);}
   #fileName{font-size:13px;color:var(--muted);}
 
   button.primary{
-    font-family:'Courier New',monospace;font-size:13px;letter-spacing:.08em;text-transform:uppercase;
-    background:var(--ink);color:var(--paper);border:none;padding:14px 26px;border-radius:2px;
-    cursor:pointer;margin-top:6px;
+    font-family:var(--font-mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;
+    background:var(--btn-bg);color:var(--btn-text);border:none;padding:14px 26px;border-radius:var(--radius);
+    cursor:pointer;margin-top:6px;transition:all .5s ease;
   }
-  button.primary:hover{background:#000;}
-  button.primary:disabled{background:#b9b2a4;cursor:default;}
+  button.primary:hover{filter:brightness(1.08);}
+  button.primary:disabled{background:#b9b2a4;color:#fff;cursor:default;filter:none;}
 
-  .keyrow{display:flex;gap:10px;align-items:center;margin-bottom:22px;font-size:13px;color:var(--muted);}
-  .keyrow input{flex:1;font-size:13px;padding:8px 10px;}
-  .keyrow a{color:var(--known);}
+  .keyrow{display:flex;gap:10px;align-items:center;margin-bottom:10px;font-size:13px;color:var(--muted);flex-wrap:wrap;transition:color .5s ease;}
+  .keyrow input{flex:1;font-size:13px;padding:8px 10px;min-width:180px;}
+  .keyrow a{color:var(--known);transition:color .5s ease;}
+  .key-hint{font-size:12px;color:var(--muted);margin-bottom:10px;transition:color .5s ease;}
+
+  .get-key-tag{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+    padding:6px 14px;border-radius:999px;margin-bottom:22px;
+    background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent);
+    text-decoration:none;cursor:pointer;transition:all .5s ease;
+    animation:tagpulse 2.2s infinite ease-in-out;
+  }
+  .get-key-tag:hover{filter:brightness(1.05);animation:none;}
+  @keyframes tagpulse{0%,100%{opacity:1;}50%{opacity:.72;}}
 
   #result{display:none;}
   .result-block{margin-bottom:22px;}
-  .result-block .tag{font-family:'Courier New',monospace;font-size:11px;letter-spacing:.1em;
-    text-transform:uppercase;margin-bottom:6px;display:inline-block;padding:2px 8px;border-radius:20px;}
-  .tag.summary{background:var(--paper-2);color:var(--ink);}
-  .tag.analogy{background:#eef4f1;color:var(--known);}
-  .tag.breaks{background:#f7ece3;color:var(--new);}
+  .result-block .tag{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;margin-bottom:6px;display:inline-block;padding:2px 8px;border-radius:20px;transition:all .5s ease;}
+  .tag.summary{background:var(--bg-2);color:var(--ink);}
+  .tag.analogy{background:var(--known-bg);color:var(--known);}
+  .tag.breaks{background:var(--accent-bg);color:var(--accent);}
   .result-block p{font-size:16px;line-height:1.65;margin:8px 0 0;}
 
-  .quiz-area{border-top:1px dashed var(--line);padding-top:20px;margin-top:8px;}
+  .quiz-area{border-top:1px dashed var(--line);padding-top:20px;margin-top:8px;transition:border-color .5s ease;}
   .quiz-q{font-size:16px;margin-bottom:14px;}
   .quiz-opt{display:block;width:100%;text-align:left;padding:10px 14px;margin-bottom:8px;
-    background:var(--paper);border:1px solid var(--line);border-radius:2px;cursor:pointer;font-family:inherit;font-size:15px;}
+    background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);cursor:pointer;
+    font-family:var(--font-body);font-size:15px;color:var(--ink);transition:all .5s ease;}
   .quiz-opt:hover{border-color:var(--ink);}
-  .quiz-opt.correct{border-color:var(--known);background:#eef4f1;}
-  .quiz-opt.wrong{border-color:var(--new);background:#f7ece3;}
+  .quiz-opt.correct{border-color:var(--known);background:var(--known-bg);}
+  .quiz-opt.wrong{border-color:var(--accent);background:var(--accent-bg);}
   .quiz-feedback{font-size:14px;color:var(--muted);margin-top:10px;min-height:20px;}
   #quizBtn{margin-top:4px;}
 
-  .loading{font-family:'Courier New',monospace;font-size:13px;color:var(--muted);
+  .loading{font-family:var(--font-mono);font-size:13px;color:var(--muted);
     display:none;align-items:center;gap:10px;margin-top:14px;}
   .dot{width:6px;height:6px;border-radius:50%;background:var(--bridge);animation:pulse 1.2s infinite ease-in-out;}
   .dot:nth-child(2){animation-delay:.2s;} .dot:nth-child(3){animation-delay:.4s;}
   @keyframes pulse{0%,80%,100%{opacity:.2;}40%{opacity:1;}}
 
-  .error{font-size:13px;color:var(--new);margin-top:10px;display:none;}
-  footer{margin-top:60px;font-size:12px;color:var(--muted);text-align:center;font-family:'Courier New',monospace;letter-spacing:.05em;}
+  .error{font-size:13px;color:var(--accent);margin-top:10px;display:none;}
+  footer{margin-top:60px;font-size:12px;color:var(--muted);text-align:center;
+    font-family:var(--font-mono);letter-spacing:.05em;transition:color .5s ease;}
+  footer .copyright{margin-top:6px;opacity:.75;}
 </style>
 </head>
 <body>
@@ -97,20 +185,32 @@
     <p class="sub">Tell Bridge one thing you understand well. Ask it to explain something you don't. It'll build a real bridge between the two — and tell you honestly where that bridge breaks.</p>
   </header>
 
+  <div class="provider-row" id="providerRow">
+    <button class="provider-pill active" data-provider="claude">Claude</button>
+    <button class="provider-pill" data-provider="grok">Grok</button>
+    <button class="provider-pill" data-provider="gemini">Gemini</button>
+  </div>
+
   <svg class="bridge-svg" viewBox="0 0 700 110" xmlns="http://www.w3.org/2000/svg">
-    <circle id="knownDot" cx="70" cy="70" r="26" fill="#eef4f1" stroke="#2e6b5e" stroke-width="2"/>
-    <text x="70" y="75" text-anchor="middle" font-family="Courier New" font-size="10" fill="#2e6b5e">KNOWN</text>
-    <circle id="newDot" cx="630" cy="70" r="26" fill="#f7ece3" stroke="#a9542f" stroke-width="2"/>
-    <text x="630" y="75" text-anchor="middle" font-family="Courier New" font-size="10" fill="#a9542f">NEW</text>
-    <path id="bridgePath" d="M 96 70 Q 350 20 604 70" fill="none" stroke="#c9a13b" stroke-width="2" stroke-dasharray="4 6" opacity="0.5"/>
-    <circle id="travelDot" cx="96" cy="70" r="4" fill="#c9a13b" opacity="0"/>
+    <g class="node-known">
+      <circle cx="70" cy="70" r="26" stroke-width="2"/>
+      <text x="70" y="75" text-anchor="middle" font-size="10" font-family="Courier New">KNOWN</text>
+    </g>
+    <g class="node-new">
+      <circle cx="630" cy="70" r="26" stroke-width="2"/>
+      <text x="630" y="75" text-anchor="middle" font-size="10" font-family="Courier New">NEW</text>
+    </g>
+    <path id="bridgePath" d="M 96 70 Q 350 20 604 70" fill="none" stroke-width="2" stroke-dasharray="4 6" opacity="0.5"/>
+    <circle id="travelDot" cx="96" cy="70" r="4" opacity="0"/>
   </svg>
 
   <div class="keyrow">
-    <span>Claude API key:</span>
+    <span id="keyLabel">Claude API key:</span>
     <input type="text" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
-    <a href="https://console.anthropic.com" target="_blank">get one ↗</a>
+    <a id="keyLink" href="https://console.anthropic.com" target="_blank">get one ↗</a>
   </div>
+  <a class="get-key-tag" id="getKeyTag" href="https://console.anthropic.com" target="_blank">🔑 New here? Get a free key →</a>
+  <div class="key-hint" id="keyHint">Used only in your browser to call the API directly — never sent anywhere else, never stored.</div>
 
   <div class="card">
     <div class="row">
@@ -158,11 +258,55 @@
     </div>
   </div>
 
-  <footer>BRIDGE · built by Kartik Thakur · a hackathon project</footer>
+  <footer>
+    BRIDGE · built by Kartik Thakur · a hackathon project
+    <div class="copyright">© 2026 Kartik Thakur. All rights reserved.</div>
+  </footer>
 </div>
 
 <script>
 let pdfText = "";
+let currentProvider = "claude";
+
+const PROVIDER_CONFIG = {
+  claude: {
+    label: "Claude API key:",
+    placeholder: "sk-ant-...",
+    link: "https://console.anthropic.com",
+    hint: "Used only in your browser to call the API directly — never sent anywhere else, never stored.",
+    tagText: "🔑 New here? Get a key at console.anthropic.com →"
+  },
+  grok: {
+    label: "Grok (xAI) API key:",
+    placeholder: "xai-...",
+    link: "https://console.x.ai",
+    hint: "Same idea as Claude — get a key from the xAI console, paste it here, it's used only in-browser.",
+    tagText: "🔑 New here? Get a key at console.x.ai →"
+  },
+  gemini: {
+    label: "Gemini API key:",
+    placeholder: "AIza...",
+    link: "https://aistudio.google.com/apikey",
+    hint: "Get a free key from Google AI Studio — no card required, takes under 2 minutes.",
+    tagText: "🔑 Free & fastest — get a key at aistudio.google.com →"
+  }
+};
+
+document.getElementById('providerRow').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.provider-pill');
+  if(!btn) return;
+  const provider = btn.dataset.provider;
+  currentProvider = provider;
+  document.documentElement.setAttribute('data-provider', provider);
+  document.querySelectorAll('.provider-pill').forEach(p=>p.classList.toggle('active', p===btn));
+  const cfg = PROVIDER_CONFIG[provider];
+  document.getElementById('keyLabel').textContent = cfg.label;
+  document.getElementById('apiKey').placeholder = cfg.placeholder;
+  document.getElementById('keyLink').href = cfg.link;
+  document.getElementById('keyHint').textContent = cfg.hint;
+  document.getElementById('getKeyTag').href = cfg.link;
+  document.getElementById('getKeyTag').textContent = cfg.tagText;
+});
 
 document.getElementById('pdfBtn').onclick = () => document.getElementById('pdfFile').click();
 document.getElementById('pdfFile').onchange = async (e) => {
@@ -171,7 +315,6 @@ document.getElementById('pdfFile').onchange = async (e) => {
   document.getElementById('fileName').textContent = "reading " + file.name + "...";
   try{
     const buf = await file.arrayBuffer();
-    // Minimal client-side PDF text extraction (no external libs / no network needed beyond CDN pdf.js)
     const pdfjsLib = await loadPdfJs();
     const pdf = await pdfjsLib.getDocument({data: buf}).promise;
     let text = "";
@@ -218,13 +361,51 @@ async function callClaude(apiKey, systemPrompt, userMsg){
       messages: [{ role: "user", content: userMsg }]
     })
   });
-  if(!res.ok){
-    const t = await res.text();
-    throw new Error("API error " + res.status + ": " + t.slice(0,200));
-  }
+  if(!res.ok){ const t = await res.text(); throw new Error("Claude API error " + res.status + ": " + t.slice(0,200)); }
   const data = await res.json();
-  const text = data.content.filter(c=>c.type==="text").map(c=>c.text).join("\n");
-  return text;
+  return data.content.filter(c=>c.type==="text").map(c=>c.text).join("\n");
+}
+
+async function callGrok(apiKey, systemPrompt, userMsg){
+  const res = await fetch("https://api.x.ai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + apiKey
+    },
+    body: JSON.stringify({
+      model: "grok-4",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userMsg }
+      ]
+    })
+  });
+  if(!res.ok){ const t = await res.text(); throw new Error("Grok API error " + res.status + ": " + t.slice(0,200)); }
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
+async function callGemini(apiKey, systemPrompt, userMsg){
+  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      contents: [{ role: "user", parts: [{ text: userMsg }] }]
+    })
+  });
+  if(!res.ok){ const t = await res.text(); throw new Error("Gemini API error " + res.status + ": " + t.slice(0,200)); }
+  const data = await res.json();
+  return data.candidates[0].content.parts.map(p=>p.text).join("\n");
+}
+
+async function callAI(systemPrompt, userMsg){
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if(!apiKey){ throw new Error("Paste your " + PROVIDER_CONFIG[currentProvider].label.replace(':','') + " above first."); }
+  if(currentProvider === "claude") return callClaude(apiKey, systemPrompt, userMsg);
+  if(currentProvider === "grok") return callGrok(apiKey, systemPrompt, userMsg);
+  if(currentProvider === "gemini") return callGemini(apiKey, systemPrompt, userMsg);
 }
 
 function animateBridge(){
@@ -244,13 +425,11 @@ function animateBridge(){
 }
 
 document.getElementById('explainBtn').onclick = async () => {
-  const apiKey = document.getElementById('apiKey').value.trim();
   const known = document.getElementById('knownInput').value.trim();
   const topicRaw = document.getElementById('topicInput').value.trim();
   const errEl = document.getElementById('error');
   errEl.style.display = 'none';
 
-  if(!apiKey){ errEl.textContent = "Paste your Claude API key above first."; errEl.style.display='block'; return; }
   if(!known){ errEl.textContent = "Tell Bridge something you already know well."; errEl.style.display='block'; return; }
   if(!topicRaw && !pdfText){ errEl.textContent = "Type a topic or upload a PDF."; errEl.style.display='block'; return; }
 
@@ -276,7 +455,7 @@ BREAKS_DOWN: <text>`;
   const userMsg = `Known domain: ${known}\nConcept to explain: ${topicContent}`;
 
   try{
-    const raw = await callClaude(apiKey, system, userMsg);
+    const raw = await callAI(system, userMsg);
     const summary = (raw.match(/SUMMARY:\s*([\s\S]*?)(?=ANALOGY:|$)/i)||[,''])[1].trim();
     const analogy = (raw.match(/ANALOGY:\s*([\s\S]*?)(?=BREAKS_DOWN:|$)/i)||[,''])[1].trim();
     const breaks = (raw.match(/BREAKS_DOWN:\s*([\s\S]*)/i)||[,''])[1].trim();
@@ -288,7 +467,7 @@ BREAKS_DOWN: <text>`;
     document.getElementById('result').style.display = 'block';
     animateBridge();
 
-    window._bridgeContext = { known, topic: topicContent, apiKey };
+    window._bridgeContext = { known, topic: topicContent };
   }catch(err){
     errEl.textContent = err.message;
     errEl.style.display = 'block';
@@ -314,7 +493,7 @@ D: <option>
 CORRECT: <letter only>`;
 
   try{
-    const raw = await callClaude(ctx.apiKey, system, `Concept: ${ctx.topic}\nAnalogy used: ${document.getElementById('outAnalogy').textContent}`);
+    const raw = await callAI(system, `Concept: ${ctx.topic}\nAnalogy used: ${document.getElementById('outAnalogy').textContent}`);
     const q = (raw.match(/Q:\s*(.*)/)||[,''])[1].trim();
     const opts = {
       A: (raw.match(/A:\s*(.*)/)||[,''])[1].trim(),
