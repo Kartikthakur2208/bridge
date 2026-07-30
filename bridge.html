@@ -103,7 +103,7 @@
     transition:background-color .5s ease, border-color .5s ease;}
   label{display:block;font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;
     text-transform:uppercase;color:var(--muted);margin-bottom:8px;transition:color .5s ease;}
-  input[type=text], textarea{
+  input[type=text], input[type=password], textarea{
     width:100%;font-family:var(--font-body);font-size:16px;padding:12px 14px;border:1px solid var(--line);
     border-radius:var(--radius);background:var(--bg);color:var(--ink);resize:vertical;
     transition:background-color .5s ease, border-color .5s ease, color .5s ease;
@@ -206,7 +206,7 @@
 
   <div class="keyrow">
     <span id="keyLabel">Claude API key:</span>
-    <input type="text" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
+    <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
     <a id="keyLink" href="https://console.anthropic.com" target="_blank">get one ↗</a>
   </div>
   <a class="get-key-tag" id="getKeyTag" href="https://console.anthropic.com" target="_blank">🔑 New here? Get a free key →</a>
