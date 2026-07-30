@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-provider="claude">
+<html lang="en" data-provider="gemini">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,6 +89,14 @@
   .provider-pill:hover{border-color:var(--ink);color:var(--ink);}
   .provider-pill.active{
     background:var(--btn-bg);color:var(--btn-text);border-color:transparent;font-weight:600;
+  }
+  .warn-dot{font-size:11px;margin-left:4px;opacity:.75;}
+
+  .provider-warning{
+    font-family:var(--font-mono);font-size:12px;line-height:1.5;
+    background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent);
+    border-radius:var(--radius);padding:10px 14px;margin-bottom:18px;
+    transition:all .35s ease;
   }
 
   .bridge-svg{width:100%;height:110px;margin:20px 0 8px;display:block;}
@@ -186,10 +194,11 @@
   </header>
 
   <div class="provider-row" id="providerRow">
-    <button class="provider-pill active" data-provider="claude">Claude</button>
-    <button class="provider-pill" data-provider="grok">Grok</button>
-    <button class="provider-pill" data-provider="gemini">Gemini</button>
+    <button class="provider-pill" data-provider="claude">Claude <span class="warn-dot" title="Small one-time free credit only">⚠</span></button>
+    <button class="provider-pill" data-provider="grok">Grok <span class="warn-dot" title="No free tier — paid only">⚠</span></button>
+    <button class="provider-pill active" data-provider="gemini">Gemini ✓ free</button>
   </div>
+  <div class="provider-warning" id="providerWarning" style="display:none;"></div>
 
   <svg class="bridge-svg" viewBox="0 0 700 110" xmlns="http://www.w3.org/2000/svg">
     <g class="node-known">
@@ -205,12 +214,12 @@
   </svg>
 
   <div class="keyrow">
-    <span id="keyLabel">Claude API key:</span>
-    <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
-    <a id="keyLink" href="https://console.anthropic.com" target="_blank">get one ↗</a>
+    <span id="keyLabel">Gemini API key:</span>
+    <input type="password" id="apiKey" placeholder="AIza..." autocomplete="off">
+    <a id="keyLink" href="https://aistudio.google.com/apikey" target="_blank">get one ↗</a>
   </div>
-  <a class="get-key-tag" id="getKeyTag" href="https://console.anthropic.com" target="_blank">🔑 New here? Get a free key →</a>
-  <div class="key-hint" id="keyHint">Used only in your browser to call the API directly — never sent anywhere else, never stored.</div>
+  <a class="get-key-tag" id="getKeyTag" href="https://aistudio.google.com/apikey" target="_blank">🔑 Free & fastest — get a key at aistudio.google.com →</a>
+  <div class="key-hint" id="keyHint">Get a free key from Google AI Studio — no card required, takes under 2 minutes.</div>
 
   <div class="card">
     <div class="row">
@@ -266,7 +275,7 @@
 
 <script>
 let pdfText = "";
-let currentProvider = "claude";
+let currentProvider = "gemini";
 
 const PROVIDER_CONFIG = {
   claude: {
@@ -274,21 +283,24 @@ const PROVIDER_CONFIG = {
     placeholder: "sk-ant-...",
     link: "https://console.anthropic.com",
     hint: "Used only in your browser to call the API directly — never sent anywhere else, never stored.",
-    tagText: "🔑 New here? Get a key at console.anthropic.com →"
+    tagText: "🔑 New here? Get a key at console.anthropic.com →",
+    warning: "⚠ Claude only gives a small one-time free credit on signup. Once it's used up, you'll need to add billing at console.anthropic.com → Plans & Billing to keep using it."
   },
   grok: {
     label: "Grok (xAI) API key:",
     placeholder: "xai-...",
     link: "https://console.x.ai",
     hint: "Same idea as Claude — get a key from the xAI console, paste it here, it's used only in-browser.",
-    tagText: "🔑 New here? Get a key at console.x.ai →"
+    tagText: "🔑 New here? Get a key at console.x.ai →",
+    warning: "⚠ Grok has no free tier at all — you'll need to add billing at console.x.ai before a key will work."
   },
   gemini: {
     label: "Gemini API key:",
     placeholder: "AIza...",
     link: "https://aistudio.google.com/apikey",
     hint: "Get a free key from Google AI Studio — no card required, takes under 2 minutes.",
-    tagText: "🔑 Free & fastest — get a key at aistudio.google.com →"
+    tagText: "🔑 Free & fastest — get a key at aistudio.google.com →",
+    warning: ""
   }
 };
 
@@ -306,6 +318,13 @@ document.getElementById('providerRow').addEventListener('click', (e)=>{
   document.getElementById('keyHint').textContent = cfg.hint;
   document.getElementById('getKeyTag').href = cfg.link;
   document.getElementById('getKeyTag').textContent = cfg.tagText;
+  const warnEl = document.getElementById('providerWarning');
+  if(cfg.warning){
+    warnEl.textContent = cfg.warning;
+    warnEl.style.display = 'block';
+  } else {
+    warnEl.style.display = 'none';
+  }
 });
 
 document.getElementById('pdfBtn').onclick = () => document.getElementById('pdfFile').click();
