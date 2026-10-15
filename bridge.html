@@ -6,7 +6,6 @@
 <title>Bridge — learn anything through what you already know</title>
 <style>
   :root{
-    /* ---- claude theme (default) ---- */
     --bg:#faf7f2;
     --bg-2:#f0ebe1;
     --card:#ffffff;
@@ -24,7 +23,6 @@
     --btn-bg:#1b1f23;
     --btn-text:#faf7f2;
   }
-
   html[data-provider="grok"]{
     --bg:#0a0a0b;
     --bg-2:#161618;
@@ -43,7 +41,7 @@
     --btn-bg:#ffffff;
     --btn-text:#0a0a0b;
   }
-
+  
   html[data-provider="gemini"]{
     --bg:#ffffff;
     --bg-2:#f4f6fb;
@@ -62,7 +60,7 @@
     --btn-bg:linear-gradient(90deg,#4285f4,#ea4335 33%,#fbbc04 66%,#34a853);
     --btn-text:#ffffff;
   }
-
+  
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
@@ -78,7 +76,6 @@
   html[data-provider="gemini"] h1 span{font-style:normal;}
   .sub{font-size:17px;color:var(--muted);max-width:52ch;line-height:1.5;transition:color .5s ease;}
 
-  /* ---- provider switcher ---- */
   .provider-row{display:flex;gap:10px;margin:24px 0 20px;flex-wrap:wrap;}
   .provider-pill{
     font-family:var(--font-mono);font-size:13px;letter-spacing:.04em;
@@ -91,7 +88,7 @@
     background:var(--btn-bg);color:var(--btn-text);border-color:transparent;font-weight:600;
   }
   .warn-dot{font-size:11px;margin-left:4px;opacity:.75;}
-
+  
   .provider-warning{
     font-family:var(--font-mono);font-size:12px;line-height:1.5;
     background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent);
@@ -106,7 +103,7 @@
   .node-new text{fill:var(--accent);transition:fill .5s ease;}
   #bridgePath{stroke:var(--bridge);transition:stroke .5s ease;}
   #travelDot{fill:var(--bridge);transition:fill .5s ease;}
-
+  
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:28px;margin-bottom:18px;
     transition:background-color .5s ease, border-color .5s ease;}
   label{display:block;font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;
@@ -116,6 +113,7 @@
     border-radius:var(--radius);background:var(--bg);color:var(--ink);resize:vertical;
     transition:background-color .5s ease, border-color .5s ease, color .5s ease;
   }
+  
   textarea{min-height:100px;}
   input[type=text]:focus, textarea:focus{outline:2px solid var(--known);outline-offset:1px;}
   .row{display:flex;gap:16px;flex-wrap:wrap;}
@@ -133,6 +131,7 @@
     background:var(--btn-bg);color:var(--btn-text);border:none;padding:14px 26px;border-radius:var(--radius);
     cursor:pointer;margin-top:6px;transition:all .5s ease;
   }
+  
   button.primary:hover{filter:brightness(1.08);}
   button.primary:disabled{background:#b9b2a4;color:#fff;cursor:default;filter:none;}
 
@@ -149,6 +148,7 @@
     text-decoration:none;cursor:pointer;transition:all .5s ease;
     animation:tagpulse 2.2s infinite ease-in-out;
   }
+  
   .get-key-tag:hover{filter:brightness(1.05);animation:none;}
   @keyframes tagpulse{0%,100%{opacity:1;}50%{opacity:.72;}}
 
@@ -186,13 +186,13 @@
 </head>
 <body>
 <div class="wrap">
-
+  
   <header>
     <div class="eyebrow">Bridge</div>
     <h1>Learn anything, <span>through what you already know</span></h1>
     <p class="sub">Tell Bridge one thing you understand well. Ask it to explain something you don't. It'll build a real bridge between the two — and tell you honestly where that bridge breaks.</p>
   </header>
-
+  
   <div class="provider-row" id="providerRow">
     <button class="provider-pill" data-provider="claude">Claude <span class="warn-dot" title="Small one-time free credit only">⚠</span></button>
     <button class="provider-pill" data-provider="grok">Grok <span class="warn-dot" title="No free tier — paid only">⚠</span></button>
@@ -220,7 +220,7 @@
   </div>
   <a class="get-key-tag" id="getKeyTag" href="https://aistudio.google.com/apikey" target="_blank">🔑 Free & fastest — get a key at aistudio.google.com →</a>
   <div class="key-hint" id="keyHint">Get a free key from Google AI Studio — no card required, takes under 2 minutes.</div>
-
+  
   <div class="card">
     <div class="row">
       <div>
@@ -240,7 +240,7 @@
     <div class="loading" id="loading"><span class="dot"></span><span class="dot"></span><span class="dot"></span> thinking in analogies…</div>
     <div class="error" id="error"></div>
   </div>
-
+  
   <div id="result">
     <div class="card">
       <div class="result-block">
@@ -256,7 +256,7 @@
         <p id="outBreaks"></p>
       </div>
     </div>
-
+    
     <div class="card quiz-area">
       <button class="primary" id="quizBtn">Check my understanding →</button>
       <div id="quizContainer" style="display:none;margin-top:18px;">
@@ -266,13 +266,13 @@
       </div>
     </div>
   </div>
-
+  
   <footer>
     BRIDGE · built by Kartik Thakur · a hackathon project
     <div class="copyright">© 2026 Kartik Thakur. All rights reserved.</div>
   </footer>
 </div>
-
+  
 <script>
 let pdfText = "";
 let currentProvider = "gemini";
@@ -322,7 +322,8 @@ document.getElementById('providerRow').addEventListener('click', (e)=>{
   if(cfg.warning){
     warnEl.textContent = cfg.warning;
     warnEl.style.display = 'block';
-  } else {
+  }
+  else {
     warnEl.style.display = 'none';
   }
 });
@@ -342,12 +343,14 @@ document.getElementById('pdfFile').onchange = async (e) => {
       const content = await page.getTextContent();
       text += content.items.map(it=>it.str).join(" ") + "\n";
     }
+    
     pdfText = text.slice(0, 6000);
     document.getElementById('fileName').textContent = "✓ " + file.name + " (" + pdfText.length + " chars extracted)";
     document.getElementById('topicInput').placeholder = "PDF loaded — leave blank to explain its core idea, or type a specific question about it";
   }catch(err){
     document.getElementById('fileName').textContent = "couldn't read that PDF — try pasting text instead";
   }
+  
 };
 
 function loadPdfJs(){
@@ -359,9 +362,11 @@ function loadPdfJs(){
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
       resolve(window.pdfjsLib);
     };
+    
     s.onerror = reject;
     document.head.appendChild(s);
   });
+  
 }
 
 async function callClaude(apiKey, systemPrompt, userMsg){
@@ -373,6 +378,7 @@ async function callClaude(apiKey, systemPrompt, userMsg){
       "anthropic-version": "2023-06-01",
       "anthropic-dangerous-direct-browser-access": "true"
     },
+    
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
       max_tokens: 1000,
@@ -380,6 +386,7 @@ async function callClaude(apiKey, systemPrompt, userMsg){
       messages: [{ role: "user", content: userMsg }]
     })
   });
+  
   if(!res.ok){ const t = await res.text(); throw new Error("Claude API error " + res.status + ": " + t.slice(0,200)); }
   const data = await res.json();
   return data.content.filter(c=>c.type==="text").map(c=>c.text).join("\n");
@@ -392,6 +399,7 @@ async function callGrok(apiKey, systemPrompt, userMsg){
       "Content-Type": "application/json",
       "Authorization": "Bearer " + apiKey
     },
+    
     body: JSON.stringify({
       model: "grok-4",
       messages: [
@@ -400,6 +408,7 @@ async function callGrok(apiKey, systemPrompt, userMsg){
       ]
     })
   });
+  
   if(!res.ok){ const t = await res.text(); throw new Error("Grok API error " + res.status + ": " + t.slice(0,200)); }
   const data = await res.json();
   return data.choices[0].message.content;
@@ -414,6 +423,7 @@ async function callGemini(apiKey, systemPrompt, userMsg){
       contents: [{ role: "user", parts: [{ text: userMsg }] }]
     })
   });
+  
   if(!res.ok){ const t = await res.text(); throw new Error("Gemini API error " + res.status + ": " + t.slice(0,200)); }
   const data = await res.json();
   return data.candidates[0].content.parts.map(p=>p.text).join("\n");
@@ -442,6 +452,7 @@ function animateBridge(){
     dot.setAttribute('cy', pt.y);
   }, 20);
 }
+  
 
 document.getElementById('explainBtn').onclick = async () => {
   const known = document.getElementById('knownInput').value.trim();
@@ -461,6 +472,7 @@ document.getElementById('explainBtn').onclick = async () => {
   const topicContent = pdfText
     ? `Here is source text extracted from a PDF the learner uploaded:\n\n"""${pdfText}"""\n\n${topicRaw ? "Specifically, they want this explained: " + topicRaw : "Extract the single core concept from this text and explain that."}`
     : topicRaw;
+  
 
   const system = `You are Bridge, a tutor that explains unfamiliar concepts by building ONE detailed, concrete analogy rooted in something the learner already understands — never three shallow ones. You must:
 1. Give a short plain-language summary of the concept (2-3 sentences, no jargon).
@@ -487,10 +499,12 @@ BREAKS_DOWN: <text>`;
     animateBridge();
 
     window._bridgeContext = { known, topic: topicContent };
-  }catch(err){
+  }
+  catch(err){
     errEl.textContent = err.message;
     errEl.style.display = 'block';
-  }finally{
+  }
+  finally{
     btn.disabled = false;
     document.getElementById('loading').style.display = 'none';
   }
@@ -520,6 +534,7 @@ CORRECT: <letter only>`;
       C: (raw.match(/C:\s*(.*)/)||[,''])[1].trim(),
       D: (raw.match(/D:\s*(.*)/)||[,''])[1].trim(),
     };
+    
     const correct = (raw.match(/CORRECT:\s*([ABCD])/)||[,''])[1].trim();
 
     document.getElementById('quizQ').textContent = q;
@@ -540,17 +555,22 @@ CORRECT: <letter only>`;
           document.getElementById('quizFeedback').textContent = "Not quite — the correct answer is highlighted.";
         }
       };
+      
       optsEl.appendChild(b);
     });
+    
     document.getElementById('quizContainer').style.display = 'block';
-  }catch(err){
+  }
+  catch(err){
     document.getElementById('quizFeedback').textContent = "Couldn't generate a question: " + err.message;
     document.getElementById('quizContainer').style.display = 'block';
-  }finally{
+  }
+  finally{
     btn.textContent = "Check my understanding →";
     btn.disabled = false;
   }
 };
+  
 </script>
 </body>
 </html>
